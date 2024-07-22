@@ -1,0 +1,13 @@
+{
+    "appId": "com.example.my-electron-app",
+    "files": [
+        "src/**/*",
+        "index.js",
+        "package.json"
+    ],
+    "directories": {
+        "output": "dist"
+    }
+}
+
+
