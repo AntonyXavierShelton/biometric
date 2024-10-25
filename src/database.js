@@ -83,11 +83,28 @@ async function readDatabaseConnection() {
 
 }
 
-async function selectTableAndColumn(columns, table_name, condition) {
+async function selectTableAndColumn(columns, table_name, condition, association, childTable) {
     try {
         const Query = `SELECT ${columns} FROM ${config.database}.dbo.${table_name}`;
         condition && (`${Query}${condition}`)
         console.log(query);
+        return Query
+    }
+    catch (error) {
+        // Select the status element
+        const statusElement = document.getElementById('db_status');
+        // Display error message and connection failed status message
+        statusElement.textContent = `Error connecting to SQL Server: ${error.message}`;
+    }
+}
+async function selectAttendanceTableQuery(columns, table_name, condition) {
+    try {
+        // const Query = `SELECT ${columns} FROM ${config.database}.dbo.${table_name}`
+        let Query = `SELECT ${columns}
+        FROM ${config.database}.dbo.${table_name} ${condition}
+    `;
+        // condition && (`${Query}${condition}`)
+        // console.log(query);
         return Query
     }
     catch (error) {
@@ -115,7 +132,9 @@ async function countTableAndColumn(column, table_name, whereCondition) {
 async function postMethod(url, body) {
     const statusElement = document.getElementById('db_status');
     try {
-        const response = await fetch(url, {
+        let finalUrl = `https:/api.abshrms.com/biometric/${url}`
+        // let finalUrl = `https://8kkt9vj3-5000.inc1.devtunnels.ms/biometric/${url}`
+        const response = await fetch(finalUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
@@ -131,28 +150,37 @@ async function postMethod(url, body) {
 }
 
 async function findAttendanceSource() {
-    const connection = await readDatabaseConnection();
-    let dateString = "05-2024"; // Sample input date string
+    const readServer = await postMethod('read', {})
     const statusElement = document.getElementById('db_status');
-    const con = await findStartAndEndDate(dateString).then(([startDate, endDate, tmp_table_name]) => {
-        // return `Table ${tmp_table_name} Start date: ${startDate.toFormat('yyyy-MM-dd')}, End date: ${endDate.toFormat('yyyy-MM-dd')}`;
-        return { startDate: startDate, endDate: endDate, tableName: tmp_table_name };
-    });
-    // Loop through dates
-    for (let dt = con.startDate; dt < con.endDate; dt = dt.plus({ months: 1 })) {
-        console.log(`Pushing data of period - ${con.startDate.toFormat('yyyy-M')} ${con.endDate.toFormat('yyyy-M')}`);
-        // statusElement.textContent = con.tableName;
-        const last_id = '7'
-        const query = await countTableAndColumn('LogDate', con.tableName, `DeviceLogId > ${last_id}`);
-        const countResult = await connection.query(query);
-        const noOfRows = Object.values(countResult[0]);
-        const selectQueryCondition = `WHERE DeviceLogId > ${last_id}  ORDER
-        BY LogDate `
-        const selectQuery = await selectTableAndColumn('DeviceLogId,DeviceId,UserId,LogDate,C1 AS AttDirection', con.tableName, selectQueryCondition);
-        // Log the retrieved values
-        const selectQueryResult = await connection.query(selectQuery);
-        await splitArrayIntoBatch(noOfRows, selectQueryResult, 10, con.tableName);
-        logger.info('Values from DeviceLogs_5_2024 table:', selectQueryResult);
+    if (readServer?.result) {
+        const connection = await readDatabaseConnection();
+        // statusElement.textContent = JSON.stringify(readServer);
+        let dateString = "10-2024"; // Sample input date string
+        const con = await findStartAndEndDate(dateString).then(([startDate, endDate, tmp_table_name]) => {
+            // return `Table ${tmp_table_name} Start date: ${startDate.toFormat('yyyy-MM-dd')}, End date: ${endDate.toFormat('yyyy-MM-dd')}`;
+            return { startDate: startDate, endDate: endDate, tableName: tmp_table_name };
+        });
+        // statusElement.textContent = readServer?.data?.last_id || 1;
+        // statusElement.textContent = readServer?.data?.last_id || 1;
+        // Loop through dates
+        for (let dt = con.startDate; dt < con.endDate; dt = dt.plus({ months: 1 })) {
+            console.log(`Pushing data of period - ${con.startDate.toFormat('yyyy-M')} ${con.endDate.toFormat('yyyy-M')}`);
+            const last_id = readServer?.data?.last_id
+            logger.info('last_id', last_id);
+            const query = await countTableAndColumn('LogDate', con.tableName, `DeviceLogId >= ${last_id}`);
+            const countResult = await connection.query(query);
+            const noOfRows = Object.values(countResult[0]);
+            const selectQueryCondition = `WHERE DeviceLogId >= ${last_id}  ORDER
+        BY LogDate`
+            const selectQuery = await selectAttendanceTableQuery('DeviceLogId,DeviceId,UserId,LogDate,C1 AS AttDirection', con.tableName, selectQueryCondition);
+            // Log the retrieved values
+            const selectQueryResult = await connection.query(selectQuery);
+            // statusElement.textContent = JSON.stringify(selectQueryResult)
+            await splitArrayIntoBatch(noOfRows, selectQueryResult, 10, con.tableName);
+            logger.info('Values from DeviceLogs_5_2024 table:', selectQueryResult);
+        }
+    }else{
+        statusElement.textContent = 'All records already sent to server... jude'
     }
 }
 
@@ -164,8 +192,7 @@ async function splitArrayIntoBatch(noOfRows, originalArray, batchSize, tableName
         let formattedArray = await attendanceResponseFormatter(responseArray, tableName, startIndex)
         startIndex += batchSize;
         displayValues(formattedArray);
-        let url = 'http://localhost:3000'
-        const postResponse = await postMethod(url, formattedArray)
+        const postResponse = await postMethod('create', formattedArray)
     }
 
 }
@@ -255,21 +282,34 @@ async function attendanceResponseFormatter(array, tableName, batch) {
     })
 }
 
+
+// Boimetric device finder
+async function getBiometricDevices() {
+    const statusElement = document.getElementById('db_status');
+    const connection = await readDatabaseConnection();
+    const selectQuery = await selectTableAndColumn('*', 'Devices', null);
+    statusElement.textContent = selectQuery
+    // Log the retrieved values
+    const selectQueryResult = await connection.query(selectQuery);
+    await postMethod('biometric-devices', selectQueryResult)
+}
+
 let i = 0
 async function schedule() {
     const statusElement = document.getElementById('db_status');
     statusElement.textContent = `running... ${i}`;
+    // await getBiometricDevices()
     await findAttendanceSource()
     i++
 }
 
 function Main() {
     setInterval(async () => {
-        await schedule()
-    }, 1000)
+        await schedule();
+    }, 10000);
 }
 module.exports = {
-    Main,getLoadedYamlFileForDatabaseConfiguration
+    Main, getLoadedYamlFileForDatabaseConfiguration
 };
 
 

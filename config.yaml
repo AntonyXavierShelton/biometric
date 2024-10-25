@@ -2,9 +2,9 @@ client_location: fsdfsdf
 client_name: sdfs
 client_token: dfsdf
 data_push_interval: fsd
-database: etimetracklite1
-password: essl
-server_key: sdfs
+database: eTimetracklite12
+password: ' essl'
+server_key: ''
 server_url: dfsdf
-sql_server: DESKTOP-7QD3O04
+sql_server: EC2AMAZ-TQLES2C
 username: essl
