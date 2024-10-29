@@ -15,11 +15,6 @@ const { checkODBCDriver } = require('./odbc-version');
 let store; // We'll load electron-store dynamically later
 let mainWindow;
 let autoLauncher;
-
-// const { checkODBCDriver } = require('./odbc-version');
-// require('electron-reload')(path.join(__dirname, '**/*'), {
-//   electron: path.join(__dirname, '..', 'node_modules', '.bin', 'electron')
-// });
 // Function to check if the MySQL ODBC driver is installed
 function isMySQLODBCInstalled() {
   // Execute the command to list ODBC drivers
@@ -32,6 +27,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    icon: path.join(__dirname,  '/assets/deskLogo.png'), // Replace with your icon path
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -81,7 +77,6 @@ async function handleAutoLaunch() {
 app.whenReady().then(async () => {
   await storage.init(); // Initialize node-persist storage
   createWindow();
-
   autoLauncher = new AutoLaunch({
     name: 'ABShrms Biometric Integration',
     path: app.getPath('exe')

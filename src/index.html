@@ -4,97 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form to YAML</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        h3 {
-            text-align: center;
-            color: #333;
-        }
-
-        #configForm {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 100%;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-        }
-
-        label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            grid-column: span 3;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        #status {
-            text-align: center;
-            margin-top: 20px;
-            font-weight: bold;
-            color: #333;
-            grid-column: span 3;
-        }
-
-        #valuesTable {
-            margin-top: 20px;
-            width: 100%;
-            border-collapse: collapse;
-            max-width: 800px;
-        }
-
-        #valuesTable th,
-        #valuesTable td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-
-        #valuesTable th {
-            background-color: #f2f2f2;
-            text-align: left;
-        }
-    </style>
+    <title>ABShrms connect</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./output.css">
 </head>
 
 <body>
+    <img src="./assets/abs-connect-full-logo.svg" alt="Your Logo" style="width: 200px; height: auto;">
     <p id="status"></p>
     <p id="db_status"></p>
-    <form id="configForm">
+    <!-- <form id="configForm">
         <div>
             <label for="client_location">Client Location:</label>
             <input type="text" id="client_location" name="client_location">
@@ -149,14 +68,70 @@
 
         <div>
             <select id="sqlServerVersion" onchange="updateODBCDriver()">
-                <!-- Options will be dynamically populated by JavaScript -->
             </select>
             <p id="odbcDriver">ODBC Driver: </p>
         </div>
 
         <button type="button" onclick="saveToYAML()">Save</button>
         <button type="button" onclick="loadFromYAML()">Load</button>
-    </form>
+    </form> -->
+
+    <!-- <form>
+        <div class="bg-blue-50 p-3 w-full h-full flex items-center justify-center">
+            <div class="flex items-center justify-center gap-6">
+                <div class="flex items-center gap-2">
+                    <p class="font-medium text-xs">Data push</p>
+                    <input type="text" id="data_push_interval" name="data_push_interval" class="p-0.5 rounded-md">
+                </div>
+                <div class="flex items-center gap-2">
+                    <p class="font-medium text-xs">Database</p>
+                    <input type="text" id="database" name="database" class="p-0.5 rounded-md">
+                </div>
+                <div class="flex items-center gap-2">
+                    <p class="font-medium text-xs">Password</p>
+                    <input type="password" id="password" name="password" class="p-0.5 rounded-md">
+
+                </div>
+            </div>
+        </div>
+        <div class="bg-[#FFEFE2] p-2 w-full h-full flex items-center justify-center my-3">
+            <div class="flex items-center justify-center gap-6">
+                <div class="flex items-center gap-2">
+                    <p class="font-medium text-xs">Server Key</p>
+                    <input type="text" id="server_key" name="server_key" class="p-0.5 rounded-md" />
+                </div>
+                <div class="flex items-center gap-2">
+                    <p class="font-medium text-xs">Server Url</p>
+                    <input type="text" class="p-0.5 rounded-md" id="server_url" name="server_url" />
+                </div>
+                <div class="flex items-center gap-2">
+                    <p class="font-medium text-xs">Sql Server</p>
+                    <input type="text" class="p-0.5 rounded-md" id="sql_server" name="sql_server" />
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#E2F6FF] p-2 w-full h-full flex items-center justify-center">
+            <div class="flex items-center justify-center gap-6">
+                <div class="flex items-center gap-2">
+                    <p class="font-medium text-xs">Username</p>
+                    <input type="text" class="p-0.5 rounded-md" id="username" name="username" />
+                </div>
+                <div class="flex items-center gap-2">
+                    <p class="font-medium text-xs">ODBC Serve</p>
+                    <select id="sqlServerVersion" onchange="updateODBCDriver()">
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="mx-auto flex items-center justify-center my-3 gap-2">
+            <button class="border p-1 rounded-sm text-xs">Cancel</button>
+            <button class="bg-blue-600 p-1 rounded-sm text-xs text-white " type="button"
+                onclick="saveToYAML()">Connect</button>
+        </div>
+    </form> -->
+
     <table id="valuesTable">
         <thead>
             <tr>
@@ -169,7 +144,32 @@
         </thead>
         <tbody></tbody>
     </table>
+    <!-- <footer class="footer">
+        <div class="footer-content">
+            <p>© 2024 Your Company Name</p>
+            <div class="footer-controls">
+                <button id="minimize-btn" class="footer-button">_</button>
+                <button id="close-btn" class="footer-button">X</button>
+            </div>
+        </div>
+    </footer> -->
     <script src="renderer.js"></script>
 </body>
 
 </html>
+
+
+<!-- Model for confirmation -->
+<!-- <div class="fixed inset-0 flex items-center justify-center flex-col bg-[#63636326] !z-[50] backdrop-blur-sm">
+    <div class="bg-white rounded-xl w-[350px] content h-[250px] !z-[100]">
+        <div class="flex items-center justify-center gap-y-4 px-3 m-auto w-full h-full">
+            <div class="py-auto">
+                <img src="./assets/loading-spinner.gif" width="100px" height="100px" class="mx-auto" />
+                <p class="text-center text-gray-600 font-medium text-xl">Server Connected!</p>
+                <p class="text-center text-xs font-normal">You are ready to proceed using
+                    <span class="text-sm text-yellow-500">ABSConnect</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div> -->

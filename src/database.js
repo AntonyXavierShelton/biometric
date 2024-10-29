@@ -131,22 +131,22 @@ async function countTableAndColumn(column, table_name, whereCondition) {
 
 async function postMethod(url, body) {
     const statusElement = document.getElementById('db_status');
-    try {
-        let finalUrl = `https:/api.abshrms.com/biometric/${url}`
-        // let finalUrl = `https://8kkt9vj3-5000.inc1.devtunnels.ms/biometric/${url}`
-        const response = await fetch(finalUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
-        const data = await response.json();
-        statusElement.textContent = data
-        return data;
-    } catch (error) {
-        statusElement.textContent = error
-        console.error('Error making POST request:', error);
-        throw error;
-    }
+    // try {
+    //     let finalUrl = `https:/api.abshrms.com/biometric/${url}`
+    //     // let finalUrl = `https://8kkt9vj3-5000.inc1.devtunnels.ms/biometric/${url}`
+    //     const response = await fetch(finalUrl, {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify(body)
+    //     });
+    //     const data = await response.json();
+    //     statusElement.textContent = data
+    //     return data;
+    // } catch (error) {
+    //     statusElement.textContent = error
+    //     console.error('Error making POST request:', error);
+    //     throw error;
+    // }
 }
 
 async function findAttendanceSource() {

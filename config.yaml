@@ -1,10 +1,10 @@
-client_location: fsdfsdf
-client_name: sdfs
-client_token: dfsdf
-data_push_interval: fsd
-database: eTimetracklite12
-password: ' essl'
-server_key: ''
-server_url: dfsdf
-sql_server: EC2AMAZ-TQLES2C
-username: essl
+client_location: abs_chennai
+client_name: abs
+client_token: client_token
+data_push_interval: asd
+database: asd
+password: sa
+server_key: as
+server_url: asd
+sql_server: asd
+username: asd

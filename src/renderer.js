@@ -22,22 +22,28 @@ const logger = createLogger({
 
 // Function to load YAML data and populate form fields
 function saveToYAML() {
-  const formData = {
-    client_location: document.getElementById('client_location').value,
-    client_name: document.getElementById('client_name').value,
-    client_token: document.getElementById('client_token').value,
-    data_push_interval: document.getElementById('data_push_interval').value,
-    database: document.getElementById('database').value,
-    password: document.getElementById('password').value,
-    server_key: document.getElementById('server_key').value,
-    server_url: document.getElementById('server_url').value,
-    sql_server: document.getElementById('sql_server').value,
-    username: document.getElementById('username').value
-  };
-  const yamlStr = yaml.dump(formData);
-  fs.writeFileSync('config.yaml', yamlStr, 'utf8');
-  alert('Configuration saved to config.yaml');
-  loadFromYAML()
+  try {
+    const formData = {
+      client_location: document.getElementById('client_location')?.value ?? "abs_chennai",
+      client_name: document.getElementById('client_name')?.value ?? "abs",
+      client_token: document.getElementById('client_token')?.value ?? "client_token",
+      data_push_interval: document.getElementById('data_push_interval')?.value ?? null,
+      database: document.getElementById('database')?.value ?? null,
+      password: document.getElementById('password')?.value ?? null,
+      server_key: document.getElementById('server_key')?.value ?? null,
+      server_url: document.getElementById('server_url')?.value ?? null,
+      sql_server: document.getElementById('sql_server')?.value ?? null,
+      username: document.getElementById('username')?.value ?? null
+    };
+    const yamlStr = yaml.dump(formData);
+    fs.writeFileSync('config.yaml', yamlStr, 'utf8');
+    alert('Configuration saved to config.yaml');
+    loadFromYAML()
+  } catch (error) {
+    alert(error)
+    console.log(error);
+
+  }
 }
 
 function loadFromYAML() {
@@ -68,20 +74,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 function getCurrentODBCVersion() {
-    let version = 'N/A';
-    try {
-        // Execute a command to retrieve ODBC version on Windows
-        const result = execSync('reg query "HKLM\\SOFTWARE\\ODBC\\ODBCINST.INI\\ODBC Drivers" /s').toString();
-        const match = result.match(/^(.*ODBC\s*Driver\s*(\d+\.\d+).*)$/m);
-        if (match && match[2]) {
-            version = match[2];
-        }
-    } catch (error) {
-        console.error('Error detecting ODBC version:', error);
+  let version = 'N/A';
+  try {
+    // Execute a command to retrieve ODBC version on Windows
+    const result = execSync('reg query "HKLM\\SOFTWARE\\ODBC\\ODBCINST.INI\\ODBC Drivers" /s').toString();
+    const match = result.match(/^(.*ODBC\s*Driver\s*(\d+\.\d+).*)$/m);
+    if (match && match[2]) {
+      version = match[2];
     }
-    const statusElement = document.getElementById('status');
-    // statusElement.textContent = `ODBC Version: ${version}`;
-    return  version;
+  } catch (error) {
+    console.error('Error detecting ODBC version:', error);
+  }
+  const statusElement = document.getElementById('status');
+  statusElement.textContent = `ODBC Version: ${version}`;
+  return version;
 }
 
 
@@ -104,19 +110,19 @@ const sqlServerVersions = [
 function populateDropdown() {
   const selectElement = document.getElementById('sqlServerVersion');
   for (let i = 0; i < sqlServerVersions.length; i++) {
-      const option = document.createElement('option');
-      option.value = sqlServerVersions[i].version;
-      option.text = sqlServerVersions[i].version;
-      selectElement.appendChild(option);
+    const option = document.createElement('option');
+    option.value = sqlServerVersions[i].version;
+    option.text = sqlServerVersions[i].version;
+    selectElement.appendChild(option);
   }
 }
 
 function suggestSuitableODBCDriverVersion(sqlServerVersion) {
   const versionInfo = sqlServerVersions.find(v => v.version === sqlServerVersion);
   if (versionInfo) {
-      return versionInfo.odbcDriver;
+    return versionInfo.odbcDriver;
   } else {
-      return 'ODBC Driver for SQL Server'; // Default to a generic driver if version is not found
+    return 'ODBC Driver for SQL Server'; // Default to a generic driver if version is not found
   }
 }
 

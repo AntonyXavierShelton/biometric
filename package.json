@@ -7,13 +7,15 @@
     "start": "electron .",
     "start-dev": "nodemon",
     "build": "electron-builder",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-css": "tailwindcss -i ./src/styles/main.css -o ./src/output.css --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "auto-launch": "^5.0.6",
+    "autoprefixer": "^10.4.20",
     "axios": "^1.7.2",
     "cheerio": "^1.0.0-rc.12",
     "electron-store": "^9.0.0",
@@ -23,6 +25,8 @@
     "mysql2": "^3.9.7",
     "node-persist": "^4.0.1",
     "odbc": "^2.4.8",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
     "winston": "^3.13.0"
   },
   "devDependencies": {
